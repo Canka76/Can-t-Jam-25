@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
+
 public class RitimKaydirma : MonoBehaviour, IPointerDownHandler, IEndDragHandler, IBeginDragHandler, IDragHandler, IDropHandler
 {
    [SerializeField] private Canvas canvas;
@@ -13,6 +15,8 @@ public class RitimKaydirma : MonoBehaviour, IPointerDownHandler, IEndDragHandler
    {
       _rectTransform = GetComponent<RectTransform>();
       canvasGroup = GetComponent<CanvasGroup>();
+
+
    }
 
    public void OnPointerDown(PointerEventData eventData)
@@ -49,4 +53,6 @@ public class RitimKaydirma : MonoBehaviour, IPointerDownHandler, IEndDragHandler
    {
       throw new NotImplementedException();
    }
+   
+   
 }
