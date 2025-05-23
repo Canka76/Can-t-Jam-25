@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragAndDrop2D : MonoBehaviour, IPointerDownHandler, IEndDragHandler, IBeginDragHandler, IDragHandler, IDropHandler
+public class RitimKaydirma : MonoBehaviour, IPointerDownHandler, IEndDragHandler, IBeginDragHandler, IDragHandler, IDropHandler
 {
    [SerializeField] private Canvas canvas;
    [SerializeField] private CanvasGroup canvasGroup;
@@ -34,7 +34,15 @@ public class DragAndDrop2D : MonoBehaviour, IPointerDownHandler, IEndDragHandler
 
    public void OnDrag(PointerEventData eventData)
    {
-      _rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+      Vector2 localPoint;
+      RectTransformUtility.ScreenPointToLocalPointInRectangle(
+         _rectTransform.parent as RectTransform,
+         eventData.position,
+         eventData.pressEventCamera,
+         out localPoint
+      );
+
+      _rectTransform.anchoredPosition = localPoint;
    }
 
    public void OnDrop(PointerEventData eventData)
