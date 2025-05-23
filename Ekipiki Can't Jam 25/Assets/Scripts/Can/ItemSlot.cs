@@ -39,13 +39,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 droppedItem.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
                 Debug.Log("Successfully dropped item");
 
-                // Reset the cursor's transform
-                if (CursorsTransform != null)
-                {
-                    CursorsTransform.anchoredPosition = cursorInitialPosition;
-                    CursorsTransform.localRotation = cursorInitialRotation;
-                }
-
                 // Mark that player triggered the randomization
                 randomizedByPlayer = true;
                 RandomizeUIPositionAndRotation();
@@ -55,6 +48,13 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     public void RandomizeUIPositionAndRotation()
     {
+        // Reset the cursor's transform
+        if (CursorsTransform != null)
+        {
+            CursorsTransform.anchoredPosition = cursorInitialPosition;
+            CursorsTransform.localRotation = cursorInitialRotation;
+        }
+        
         if (itemPrefab == null || canvasRectTransform == null)
         {
             Debug.LogWarning("Missing itemPrefab or canvasRectTransform!");
