@@ -4,28 +4,33 @@ using System.Collections;
 
 public class ItemSlot : MonoBehaviour, IDropHandler
 {
-    public RectTransform canvasRectTransform; // Assign in Inspector
-    public RectTransform itemPrefab;          // Assign in Inspector
-    public RectTransform CursorsTransform;    // Assign in Inspector
+    [Header("References")]
+    [SerializeField] private RectTransform canvasRectTransform;
+    [SerializeField] private RectTransform[] imageItems;
+    [SerializeField] private RectTransform cursorTransform;
+    [SerializeField] private RectTransform itemPrefab;
+    [SerializeField] private RectTransform CursorsTransform;
+
+    [Header("Timing")]
+    [SerializeField] private float failTimeout = 5f;
+    
+    [SerializeField]float padding = 40f;
 
     private Vector2 cursorInitialPosition;
     private Quaternion cursorInitialRotation;
-
     private bool randomizedByPlayer = false;
-    [SerializeField] float failTimeout = 5f; // Time to wait before logging failure
+    private int currentActiveIndex = -1;
 
     void Start()
     {
-        // Store Cursor's initial transform
-        if (CursorsTransform != null)
+        if (cursorTransform != null)
         {
-            cursorInitialPosition = CursorsTransform.anchoredPosition;
-            cursorInitialRotation = CursorsTransform.localRotation;
+            cursorInitialPosition = cursorTransform.anchoredPosition;
+            cursorInitialRotation = cursorTransform.localRotation;
         }
 
-        RandomizeUIPositionAndRotation();
+        RandomizeActiveImage();
 
-        // Start coroutine to monitor repeatedly
         StartCoroutine(WatchForPlayerRandomization());
     }
 
@@ -39,22 +44,21 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 droppedItem.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
                 Debug.Log("Successfully dropped item");
 
-                // Mark that player triggered the randomization
                 randomizedByPlayer = true;
-                RandomizeUIPositionAndRotation();
+                RandomizeActiveImage();
+                RandomizeUIPositionAndRotation(); // untouched method
             }
         }
     }
 
     public void RandomizeUIPositionAndRotation()
     {
-        // Reset the cursor's transform
         if (CursorsTransform != null)
         {
             CursorsTransform.anchoredPosition = cursorInitialPosition;
             CursorsTransform.localRotation = cursorInitialRotation;
         }
-        
+
         if (itemPrefab == null || canvasRectTransform == null)
         {
             Debug.LogWarning("Missing itemPrefab or canvasRectTransform!");
@@ -80,23 +84,106 @@ public class ItemSlot : MonoBehaviour, IDropHandler
         itemPrefab.localRotation = Quaternion.Euler(0f, 0f, randomZ);
     }
 
+    private void RandomizeActiveImage()
+    {
+        // Reset cursor
+        if (cursorTransform != null)
+        {
+            cursorTransform.anchoredPosition = cursorInitialPosition;
+            cursorTransform.localRotation = cursorInitialRotation;
+        }
+
+        if (imageItems == null || imageItems.Length == 0 || canvasRectTransform == null)
+        {
+            Debug.LogWarning("Missing image items or canvas reference!");
+            return;
+        }
+
+        // Deactivate all images
+        foreach (var img in imageItems)
+        {
+            img.gameObject.SetActive(false);
+        }
+
+        // Pick a random image
+        currentActiveIndex = Random.Range(0, imageItems.Length);
+        RectTransform activeImage = imageItems[currentActiveIndex];
+        activeImage.gameObject.SetActive(true);
+
+        Vector2 imageSize = activeImage.rect.size * activeImage.lossyScale;
+        float canvasWidth = canvasRectTransform.rect.width;
+        float canvasHeight = canvasRectTransform.rect.height;
+
+        
+        float minX = -canvasWidth / 2f + imageSize.x / 2f + padding;
+        float maxX = canvasWidth / 2f - imageSize.x / 2f - padding;
+        float minY = -canvasHeight / 2f + imageSize.y / 2f + padding;
+        float maxY = canvasHeight / 2f - imageSize.y / 2f - padding;
+
+        int attempts = 0;
+        bool placed = false;
+
+        while (attempts < 50 && !placed)
+        {
+            float randomX = Random.Range(minX, maxX);
+            float randomY = Random.Range(minY, maxY);
+            float randomZ = Random.Range(-60f, 60f);
+
+            activeImage.anchoredPosition = new Vector2(randomX, randomY);
+            activeImage.localRotation = Quaternion.Euler(0f, 0f, randomZ);
+
+            // Let Unity update transform matrix for next frame
+            Canvas.ForceUpdateCanvases();
+
+            if (!IsOverlapping(activeImage, itemPrefab))
+            {
+                placed = true;
+                break;
+            }
+
+            attempts++;
+        }
+
+        if (!placed)
+        {
+            Debug.LogWarning("Could not find non-colliding position after 50 tries.");
+        }
+
+    }
+
     private IEnumerator WatchForPlayerRandomization()
     {
-        while (true) // keep monitoring indefinitely
+        while (true)
         {
             randomizedByPlayer = false;
-
             yield return new WaitForSeconds(failTimeout);
 
             if (!randomizedByPlayer)
             {
-                Debug.LogWarning("Player failed to trigger RandomizeUIPositionAndRotation within the time limit.");
-                RandomizeUIPositionAndRotation();   
+                Debug.LogWarning("Player failed to drop in time. Randomizing again.");
+                RandomizeActiveImage();
+                RandomizeUIPositionAndRotation();
             }
             else
             {
-                Debug.Log("Player triggered randomization within the time limit, restarting check.");
+                Debug.Log("Player succeeded. Resetting timer.");
             }
         }
+    }
+
+    private bool IsOverlapping(RectTransform a, RectTransform b)
+    {
+        if (a == null || b == null) return false;
+
+        Vector3[] cornersA = new Vector3[4];
+        Vector3[] cornersB = new Vector3[4];
+
+        a.GetWorldCorners(cornersA);
+        b.GetWorldCorners(cornersB);
+
+        Rect rectA = new Rect(cornersA[0], cornersA[2] - cornersA[0]);
+        Rect rectB = new Rect(cornersB[0], cornersB[2] - cornersB[0]);
+
+        return rectA.Overlaps(rectB);
     }
 }
