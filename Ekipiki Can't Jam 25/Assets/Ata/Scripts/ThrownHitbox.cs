@@ -11,7 +11,7 @@ public class ThrownHitbox : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (parent == null || !parent.IsThrown()) return;
+        if (parent == null || !parent.IsThrown) return;
         if (other.CompareTag("Enemy") && other.gameObject != transform.parent.gameObject)
         {
             Debug.Log("🔥 YOL ÜSTÜ HASAR VERİLDİ");

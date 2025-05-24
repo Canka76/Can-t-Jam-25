@@ -3,16 +3,21 @@ using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public bool IsThrown() => isThrown;
     public int maxHealth = 3;
+
+    private bool isSlamming = false;
+    public bool IsSlamming => isSlamming; // başka yerden erişim için
+
     private int currentHealth;
 
-    private bool isThrown = false;
+    public bool IsThrown = false;
+    public bool IsGrabbed { get; private set; } = false;
 
     private SpriteRenderer sr;
     private Color originalColor;
     private Rigidbody2D rb;
     private EnemyMovement movementScript;
+    private Animator anim;
 
     private int damage => 1;
 
@@ -23,6 +28,7 @@ public class EnemyHealth : MonoBehaviour
         originalColor = sr.color;
         rb = GetComponent<Rigidbody2D>();
         movementScript = GetComponent<EnemyMovement>();
+        anim = GetComponent<Animator>();
     }
 
     public void TakeDamage(int amount, Vector2 hitDirection, bool useKnockback)
@@ -33,31 +39,37 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
-            return;
         }
-
-        if (useKnockback)
+        else if (useKnockback)
+        {
             movementScript?.Knockback(hitDirection.normalized * 6f, 0.3f);
+        }
         else
+        {
             StartCoroutine(FlinchEffect());
+        }
     }
 
     public void Grabbed(Transform parent)
-{
-    rb.isKinematic = true;
-    rb.linearVelocity = Vector2.zero;
-    transform.SetParent(parent);
-    transform.localPosition = Vector3.zero;
-
-    movementScript?.SetMovementEnabled(false);
-    GetComponent<Animator>()?.SetTrigger("Grabbed"); // 🔥 ANİMASYON
-}
-
-    public void Slam()
     {
+        rb.isKinematic = true;
+        rb.linearVelocity = Vector2.zero;
+        transform.SetParent(parent);
+        transform.localPosition = Vector3.zero;
+
+        movementScript?.SetMovementEnabled(false);
+        anim?.SetTrigger("Grabbed");
+        IsGrabbed = true;
+    }
+
+        public void Slam()
+    {
+        isSlamming = true;
+
         transform.SetParent(null);
         rb.isKinematic = false;
         movementScript?.SetMovementEnabled(false);
+        IsGrabbed = false;
 
         Collider2D[] others = Physics2D.OverlapCircleAll(transform.position, 1f);
         foreach (Collider2D col in others)
@@ -74,76 +86,45 @@ public class EnemyHealth : MonoBehaviour
         movementScript?.Stun(0.5f);
         StartCoroutine(SlamBounceEffect());
         StartCoroutine(ResumeMovementAfterDelay(1f));
+        anim?.SetTrigger("Thrown");
 
-        GetComponent<Animator>()?.SetTrigger("Grabbed");
+        // 💥 SLAM bitince flag sıfırlanacak
+        StartCoroutine(ResetSlamFlag(1f)); // 1 saniye sonra
     }
 
-    public void Thrown(Vector2 direction)
+IEnumerator ResetSlamFlag(float delay)
 {
-    transform.SetParent(null);
-    rb.isKinematic = false;
-    rb.linearVelocity = Vector2.zero;
-    rb.AddForce(direction.normalized * 20f, ForceMode2D.Impulse);
-
-    isThrown = true;
-    movementScript?.SetMovementEnabled(false);
-
-    GetComponent<Animator>()?.SetTrigger("Thrown"); // 🔥 ANİMASYON
+    yield return new WaitForSeconds(delay);
+    isSlamming = false;
 }
 
 
-
-    IEnumerator DestroyAfterFlight()
+        public void Thrown(Vector2 direction)
     {
-        yield return new WaitForSeconds(0.5f);
-        TakeDamage(damage * 2, Vector2.zero, false);
-        movementScript?.SetMovementEnabled(true);
-        isThrown = false;
-    }
-
-    IEnumerator StopThrowAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        if (isThrown) // hâlâ fırlatılmışsa
-        {
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-            isThrown = false;
-            movementScript?.SetMovementEnabled(true);
-        }
-    }
-
-void OnCollisionEnter2D(Collision2D collision)
-{
-    if (isThrown && collision.gameObject.CompareTag("Enemy") && collision.gameObject != gameObject)
-    {
-        Debug.Log("💥 FİZİKSEL ÇARPTIM!");
-
-        // Yön vektörü: çarpılan düşmanın fırlatana göre yönü
-        Vector2 dir = collision.transform.position - transform.position;
-        dir.Normalize();
-
-        // Çarpılan düşmana hasar + knockback
-        var otherHealth = collision.gameObject.GetComponent<EnemyHealth>();
-        var otherMove = collision.gameObject.GetComponent<EnemyMovement>();
-
-        otherHealth?.TakeDamage(damage * 2, dir, true);
-        otherMove?.Knockback(dir * 5f, 0.2f);
-
-        // Fırlayan düşman da biraz sekecek gibi hafif geri tepki
-        Vector2 recoilDir = -dir;
+        transform.SetParent(null);
+        rb.isKinematic = false;
         rb.linearVelocity = Vector2.zero;
-        rb.AddForce(recoilDir * 3f, ForceMode2D.Impulse); // çarpan geri savrulur
+        rb.AddForce(direction.normalized * 20f, ForceMode2D.Impulse);
 
-        // Fırlatma bitiyor
-        isThrown = false;
-        movementScript?.SetMovementEnabled(true);
+        IsThrown = true;
+        IsGrabbed = false;
+        movementScript?.SetMovementEnabled(false);
+        anim?.SetTrigger("Thrown");
+
+        StartCoroutine(StopThrowAfterSeconds(0.5f)); // 💥 0.5 saniye sonra dur
     }
-}
+
+        IEnumerator StopThrowAfterSeconds(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        IsThrown = false;
+        movementScript?.SetMovementEnabled(true); // hareketi geri aç
+    }
 
 
-    
 
     IEnumerator ResumeMovementAfterDelay(float delay)
     {
@@ -153,7 +134,7 @@ void OnCollisionEnter2D(Collision2D collision)
 
     IEnumerator FlashWhite()
     {
-        sr.color = Color.white;
+        sr.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         sr.color = originalColor;
     }
