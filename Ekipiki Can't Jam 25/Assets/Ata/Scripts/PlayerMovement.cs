@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Vector2 movement;
+    
 
     public Transform attackPoint;
 

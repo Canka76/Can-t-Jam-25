@@ -15,8 +15,6 @@ public class RitimKaydirma : MonoBehaviour, IPointerDownHandler, IEndDragHandler
    {
       _rectTransform = GetComponent<RectTransform>();
       canvasGroup = GetComponent<CanvasGroup>();
-
-
    }
 
    public void OnPointerDown(PointerEventData eventData)

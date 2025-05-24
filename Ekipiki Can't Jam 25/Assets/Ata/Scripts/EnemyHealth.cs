@@ -43,13 +43,15 @@ public class EnemyHealth : MonoBehaviour
     }
 
     public void Grabbed(Transform parent)
-    {
-        rb.isKinematic = true;
-        rb.linearVelocity = Vector2.zero;
-        transform.SetParent(parent);
-        transform.localPosition = Vector3.zero;
-        movementScript?.SetMovementEnabled(false);
-    }
+{
+    rb.isKinematic = true;
+    rb.linearVelocity = Vector2.zero;
+    transform.SetParent(parent);
+    transform.localPosition = Vector3.zero;
+
+    movementScript?.SetMovementEnabled(false);
+    GetComponent<Animator>()?.SetTrigger("Grabbed"); // 🔥 ANİMASYON
+}
 
     public void Slam()
     {
@@ -72,6 +74,8 @@ public class EnemyHealth : MonoBehaviour
         movementScript?.Stun(0.5f);
         StartCoroutine(SlamBounceEffect());
         StartCoroutine(ResumeMovementAfterDelay(1f));
+
+        GetComponent<Animator>()?.SetTrigger("Grabbed");
     }
 
     public void Thrown(Vector2 direction)
@@ -79,13 +83,12 @@ public class EnemyHealth : MonoBehaviour
     transform.SetParent(null);
     rb.isKinematic = false;
     rb.linearVelocity = Vector2.zero;
-    rb.angularVelocity = 0f;
     rb.AddForce(direction.normalized * 20f, ForceMode2D.Impulse);
 
     isThrown = true;
     movementScript?.SetMovementEnabled(false);
 
-    StartCoroutine(StopThrowAfterDelay(0.5f)); // sadece flag kapat
+    GetComponent<Animator>()?.SetTrigger("Thrown"); // 🔥 ANİMASYON
 }
 
 
