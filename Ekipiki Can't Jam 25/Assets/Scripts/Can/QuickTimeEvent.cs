@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using Random = UnityEngine.Random;
 
 public class QuickTimeEvent : MonoBehaviour
 {
@@ -14,6 +16,11 @@ public class QuickTimeEvent : MonoBehaviour
     private bool inputReceived = false;
 
     void Start()
+    {
+        StartCoroutine(StartQTE());
+    }
+
+    private void OnEnable()
     {
         StartCoroutine(StartQTE());
     }
@@ -52,8 +59,10 @@ public class QuickTimeEvent : MonoBehaviour
         if (!inputReceived)
         {
             qteText.text = "Too Late!";
+            puzzleManager.currentProgress--;
         }
 
+        Debug.Log($"QTE çalışacak ve  progress: {puzzleManager.currentProgress}");
         // Wait a bit before starting again
         yield return new WaitForSeconds(2f);
         StartCoroutine(StartQTE());
