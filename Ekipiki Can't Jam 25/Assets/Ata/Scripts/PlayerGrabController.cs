@@ -4,6 +4,13 @@ public class PlayerGrabController : MonoBehaviour
 {
     public Transform grabPoint;
     private EnemyHealth grabbedEnemy;
+    private Animator anim;
+
+    void Start()
+    {
+        anim = GetComponent<Animator>(); // Animator bağlantısı
+        anim.SetBool("IsHolding", false);
+    }
 
     void Update()
     {
@@ -37,6 +44,8 @@ public class PlayerGrabController : MonoBehaviour
                 if (grabbedEnemy != null)
                 {
                     grabbedEnemy.Grabbed(grabPoint);
+                    anim.SetTrigger("Grab");         // grab animasyonu bir kere oynasın
+                    anim.SetBool("IsHolding", true); // tutma boyunca holding animasyonunda kalsın
                     break;
                 }
             }
@@ -47,17 +56,20 @@ public class PlayerGrabController : MonoBehaviour
     {
         grabbedEnemy.Slam();
         grabbedEnemy = null;
+        anim.SetTrigger("Throw");
+        anim.SetBool("IsHolding", false); // Holding'den çık
     }
 
     void ThrowForward()
-{
-    if (grabbedEnemy != null)
     {
-        float directionX = Mathf.Sign(transform.localScale.x); // -1 sola, +1 sağa
-        Vector2 throwDir = new Vector2(directionX, 0f);
-        grabbedEnemy.Thrown(throwDir);
-        grabbedEnemy = null;
+        if (grabbedEnemy != null)
+        {
+            float directionX = Mathf.Sign(transform.localScale.x); // -1 sola, +1 sağa
+            Vector2 throwDir = new Vector2(directionX, 0f);
+            grabbedEnemy.Thrown(throwDir);
+            grabbedEnemy = null;
+            anim.SetTrigger("Throw");
+            anim.SetBool("IsHolding", false); // Holding'den çık
+        }
     }
-}
-
 }
