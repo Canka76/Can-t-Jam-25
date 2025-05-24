@@ -263,6 +263,7 @@ MonoBehaviour:
   directionArrow: {fileID: 0}
   maxPower: 20
   barSpeed: 50
+  shootCooldown: 1
 --- !u!1 &775468060
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,7 +790,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1365512382
 MonoBehaviour:
   m_ObjectHideFlags: 0
