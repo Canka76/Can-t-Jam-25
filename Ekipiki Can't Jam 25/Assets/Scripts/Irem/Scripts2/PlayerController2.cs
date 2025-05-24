@@ -8,6 +8,9 @@ public class PlayerController2 : MonoBehaviour
     private Vector3 originalScale;
     private BoxCollider2D col;
     private bool isGrounded = true;
+    float slideTimer = 0f;
+    float slideDuration = 1f;
+    bool isSliding = false;
 
     void Start()
     {
@@ -18,25 +21,35 @@ public class PlayerController2 : MonoBehaviour
 
     void Update()
     {
-        // Z�plama
+        // Zıplama
         if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // velocity kullan
             isGrounded = false;
         }
 
-        // E�ilme
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        // Eğilmeyi başlat
+        if (Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
         {
+            isSliding = true;
+            slideTimer = 0f;
+
             transform.localScale = new Vector3(originalScale.x, originalScale.y * 0.5f, originalScale.z);
             col.offset = new Vector2(0, -0.25f);
             col.size = new Vector2(1, 0.5f);
         }
-        if (Input.GetKeyUp(KeyCode.DownArrow))
+
+        // Eğilme süresi takip
+        if (isSliding)
         {
-            transform.localScale = originalScale;
-            col.offset = new Vector2(0, 0);
-            col.size = new Vector2(1, 1);
+            slideTimer += Time.deltaTime;
+            if (slideTimer >= slideDuration)
+            {
+                isSliding = false;
+                transform.localScale = originalScale;
+                col.offset = new Vector2(0, 0);
+                col.size = new Vector2(1, 1);
+            }
         }
     }
 
