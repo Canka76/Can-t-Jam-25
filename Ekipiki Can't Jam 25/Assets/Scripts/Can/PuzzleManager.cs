@@ -17,8 +17,6 @@ public class PuzzleManager : MonoBehaviour
 
     private bool puzzleJustChanged = false;
 
-    public GameObject TestGameObject;
-
     void Start()
     {
         progress = currentProgress;
@@ -57,7 +55,6 @@ public class PuzzleManager : MonoBehaviour
         if (currentProgress >= -4 && currentProgress <= 2)
         {
             Debug.Log($"Default state: {currentProgress}");
-            
         }
         else if (currentProgress < -4 && currentProgress > -7)
         {
