@@ -1,189 +1,159 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using System.Collections;
+
+[System.Serializable]
+public class ItemSlotSettings
+{
+    public float failTimeout = 5f;
+    public float padding = 40f;
+    public Vector2 positionRange = new Vector2(100f, 100f);
+}
 
 public class ItemSlot : MonoBehaviour, IDropHandler
 {
     [Header("References")]
-    [SerializeField] private RectTransform canvasRectTransform;
-    [SerializeField] private RectTransform[] imageItems;
-    [SerializeField] private RectTransform cursorTransform;
-    [SerializeField] private RectTransform itemPrefab;
-    [SerializeField] private RectTransform CursorsTransform;
+    [SerializeField] private RectTransform canvasRect;
+    [SerializeField] private RectTransform[] puzzleItems;
+    [SerializeField] private RectTransform cursor;
+    [SerializeField] private RectTransform draggableItem;
+    [SerializeField] private RectTransform cursorContainer;
 
-    [Header("Timing")]
-    [SerializeField] private float failTimeout = 5f;
-    
-    [SerializeField]float padding = 40f;
+    [Header("Events")]
+    public UnityEvent onSuccess;
+    public UnityEvent onFail;
+
+    [Header("Settings")]
+    public ItemSlotSettings settings;
 
     private Vector2 cursorInitialPosition;
     private Quaternion cursorInitialRotation;
-    private bool randomizedByPlayer = false;
-    private int currentActiveIndex = -1;
+    private bool playerInteracted;
+    private int activeItemIndex = -1;
+    private Coroutine timeoutRoutine;
 
-    void Start()
+    private void Awake()
     {
-        if (cursorTransform != null)
-        {
-            cursorInitialPosition = cursorTransform.anchoredPosition;
-            cursorInitialRotation = cursorTransform.localRotation;
-        }
-
-        RandomizeActiveImage();
-
-        StartCoroutine(WatchForPlayerRandomization());
+        ValidateReferences();
+        StoreInitialCursorState();
     }
+
+    private void Start()
+    {
+        ActivateRandomPuzzleItem();
+        StartTimeoutWatch();
+    }
+
+    private void OnEnable() => StartTimeoutWatch();
+    private void OnDisable() => StopTimeoutWatch();
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag != null)
-        {
-            RectTransform droppedItem = eventData.pointerDrag.GetComponent<RectTransform>();
-            if (droppedItem != null)
-            {
-                droppedItem.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
-                Debug.Log("Successfully dropped item");
+        if (eventData.pointerDrag == null) return;
 
-                randomizedByPlayer = true;
-                RandomizeActiveImage();
-                RandomizeUIPositionAndRotation(); // untouched method
-            }
-        }
-    }
-
-    public void RandomizeUIPositionAndRotation()
-    {
-        if (CursorsTransform != null)
-        {
-            CursorsTransform.anchoredPosition = cursorInitialPosition;
-            CursorsTransform.localRotation = cursorInitialRotation;
-        }
-
-        if (itemPrefab == null || canvasRectTransform == null)
-        {
-            Debug.LogWarning("Missing itemPrefab or canvasRectTransform!");
-            return;
-        }
-
-        Vector2 objectSize = itemPrefab.rect.size * itemPrefab.lossyScale;
-        float canvasWidth = canvasRectTransform.rect.width;
-        float canvasHeight = canvasRectTransform.rect.height;
-
-        float padding = 20f;
-
-        float minX = -canvasWidth / 2f + objectSize.x / 2f + padding;
-        float maxX = canvasWidth / 2f - objectSize.x / 2f - padding;
-        float minY = -canvasHeight / 2f + objectSize.y / 2f + padding;
-        float maxY = canvasHeight / 2f - objectSize.y / 2f - padding;
-
-        float randomX = Random.Range(minX, maxX);
-        float randomY = Random.Range(minY, maxY);
-        float randomZ = Random.Range(-360f, 360f);
-
-        itemPrefab.anchoredPosition = new Vector2(randomX, randomY);
-        itemPrefab.localRotation = Quaternion.Euler(0f, 0f, randomZ);
-    }
-
-    private void RandomizeActiveImage()
-    {
-        // Reset cursor
-        if (cursorTransform != null)
-        {
-            cursorTransform.anchoredPosition = cursorInitialPosition;
-            cursorTransform.localRotation = cursorInitialRotation;
-        }
-
-        if (imageItems == null || imageItems.Length == 0 || canvasRectTransform == null)
-        {
-            Debug.LogWarning("Missing image items or canvas reference!");
-            return;
-        }
-
-        // Deactivate all images
-        foreach (var img in imageItems)
-        {
-            img.gameObject.SetActive(false);
-        }
-
-        // Pick a random image
-        currentActiveIndex = Random.Range(0, imageItems.Length);
-        RectTransform activeImage = imageItems[currentActiveIndex];
-        activeImage.gameObject.SetActive(true);
-
-        Vector2 imageSize = activeImage.rect.size * activeImage.lossyScale;
-        float canvasWidth = canvasRectTransform.rect.width;
-        float canvasHeight = canvasRectTransform.rect.height;
-
+        playerInteracted = true;
+        eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
         
-        float minX = -canvasWidth / 2f + imageSize.x / 2f + padding;
-        float maxX = canvasWidth / 2f - imageSize.x / 2f - padding;
-        float minY = -canvasHeight / 2f + imageSize.y / 2f + padding;
-        float maxY = canvasHeight / 2f - imageSize.y / 2f - padding;
-
-        int attempts = 0;
-        bool placed = false;
-
-        while (attempts < 50 && !placed)
-        {
-            float randomX = Random.Range(minX, maxX);
-            float randomY = Random.Range(minY, maxY);
-            float randomZ = Random.Range(-60f, 60f);
-
-            activeImage.anchoredPosition = new Vector2(randomX, randomY);
-            activeImage.localRotation = Quaternion.Euler(0f, 0f, randomZ);
-
-            // Let Unity update transform matrix for next frame
-            Canvas.ForceUpdateCanvases();
-
-            if (!IsOverlapping(activeImage, itemPrefab))
-            {
-                placed = true;
-                break;
-            }
-
-            attempts++;
-        }
-
-        if (!placed)
-        {
-            Debug.LogWarning("Could not find non-colliding position after 50 tries.");
-        }
-
+        onSuccess?.Invoke();
+        ResetPuzzleState();
     }
 
-    private IEnumerator WatchForPlayerRandomization()
+    private void ValidateReferences()
     {
-        while (true)
+        if (puzzleItems == null || puzzleItems.Length == 0 || canvasRect == null)
         {
-            randomizedByPlayer = false;
-            yield return new WaitForSeconds(failTimeout);
-
-            if (!randomizedByPlayer)
-            {
-                Debug.LogWarning("Player failed to drop in time. Randomizing again.");
-                RandomizeActiveImage();
-                RandomizeUIPositionAndRotation();
-            }
-            else
-            {
-                Debug.Log("Player succeeded. Resetting timer.");
-            }
+            Debug.LogError("Essential references missing in ItemSlot!", this);
+            enabled = false;
         }
     }
 
-    private bool IsOverlapping(RectTransform a, RectTransform b)
+    private void StoreInitialCursorState()
     {
-        if (a == null || b == null) return false;
+        if (cursor != null)
+        {
+            cursorInitialPosition = cursor.anchoredPosition;
+            cursorInitialRotation = cursor.localRotation;
+        }
+    }
 
-        Vector3[] cornersA = new Vector3[4];
-        Vector3[] cornersB = new Vector3[4];
+    private void ActivateRandomPuzzleItem()
+    {
+        DeactivateAllItems();
+        activeItemIndex = Random.Range(0, puzzleItems.Length);
+        puzzleItems[activeItemIndex].gameObject.SetActive(true);
+        RandomizeItemPosition(puzzleItems[activeItemIndex]);
+        RandomizeItemPosition(cursorContainer);
+    }
 
-        a.GetWorldCorners(cornersA);
-        b.GetWorldCorners(cornersB);
+    private void DeactivateAllItems()
+    {
+        foreach (var item in puzzleItems)
+        {
+            item.gameObject.SetActive(false);
+        }
+    }
 
-        Rect rectA = new Rect(cornersA[0], cornersA[2] - cornersA[0]);
-        Rect rectB = new Rect(cornersB[0], cornersB[2] - cornersB[0]);
+    private void RandomizeItemPosition(RectTransform item)
+    {
+        if (canvasRect == null) return;
 
-        return rectA.Overlaps(rectB);
+        Vector2 canvasSize = canvasRect.rect.size;
+        Vector2 itemSize = item.rect.size * item.lossyScale;
+
+        float xPos = Random.Range(
+            -canvasSize.x / 2 + itemSize.x / 2 + settings.padding,
+            canvasSize.x / 2 - itemSize.x / 2 - settings.padding
+        );
+
+        float yPos = Random.Range(
+            -canvasSize.y / 2 + itemSize.y / 2 + settings.padding,
+            canvasSize.y / 2 - itemSize.y / 2 - settings.padding
+        );
+
+        item.anchoredPosition = new Vector2(xPos, yPos);
+        item.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
+        
+        ResetPuzzleState();
+    }
+
+    private void ResetPuzzleState()
+    {
+        if (cursorContainer != null)
+        {
+            cursorContainer.anchoredPosition = cursorInitialPosition;
+            cursorContainer.localRotation = cursorInitialRotation;
+        }
+
+        playerInteracted = false;
+        ActivateRandomPuzzleItem();
+        StartTimeoutWatch();
+    }
+
+    private void StartTimeoutWatch()
+    {
+        StopTimeoutWatch();
+        timeoutRoutine = StartCoroutine(TimeoutWatch());
+    }
+
+    private void StopTimeoutWatch()
+    {
+        if (timeoutRoutine != null)
+        {
+            StopCoroutine(timeoutRoutine);
+            timeoutRoutine = null;
+        }
+    }
+
+    private IEnumerator TimeoutWatch()
+    {
+        playerInteracted = false;
+        yield return new WaitForSeconds(settings.failTimeout);
+
+        if (!playerInteracted)
+        {
+            onFail?.Invoke();
+            ResetPuzzleState();
+        }
     }
 }
