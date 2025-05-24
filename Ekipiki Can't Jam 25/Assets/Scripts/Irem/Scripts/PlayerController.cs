@@ -11,16 +11,20 @@ public class PlayerController : MonoBehaviour
 
     public float maxPower = 20f;
     public float barSpeed = 30f;
+    public float shootCooldown = 1f; // ⏱ Atışlar arası bekleme süresi
 
     private float currentPower = 0f;
     private bool increasing = true;
+    private float lastShootTime = -Mathf.Infinity;
 
     void Update()
     {
         RotateDirectionArrow();
-        // Otomatik dolup boşalan gü barı
+
+        // Otomatik dolup boşalan güç barı
         if (Input.GetMouseButton(0))
-        {if (increasing)
+        {
+            if (increasing)
             {
                 currentPower += Time.deltaTime * barSpeed;
                 if (currentPower >= maxPower)
@@ -42,7 +46,7 @@ public class PlayerController : MonoBehaviour
 
         powerBar.value = currentPower;
 
-        // Renk değiştirme (doluluğa göre)
+        // Renk değiştirme
         if (currentPower < maxPower * 0.33f)
             fillImage.color = Color.red;
         else if (currentPower < maxPower * 0.66f)
@@ -50,10 +54,11 @@ public class PlayerController : MonoBehaviour
         else
             fillImage.color = Color.green;
 
-        // Tıklama ile fırlatma
-        if (Input.GetMouseButtonUp(0))
+        // Tıklama ile ok fırlatma + cooldown kontrolü
+        if (Input.GetMouseButtonUp(0) && Time.time >= lastShootTime + shootCooldown)
         {
             ShootArrow();
+            lastShootTime = Time.time;
             currentPower = 0f;
         }
     }
@@ -67,15 +72,12 @@ public class PlayerController : MonoBehaviour
 
         Vector2 direction = (mousePos - shootPoint.position).normalized;
 
+        // İlk ok
         FireOneArrow(direction);
 
-        // İkinci ok 
-        if (GameManager.Instance.doubleShot)
-            FireOneArrow(direction);
-
+        // Çift ok modu aktifse 2. ok
         if (GameManager.Instance != null && GameManager.Instance.doubleShot)
         {
-            // Hafif açılı ikinci ok
             Vector2 secondDirection = Quaternion.Euler(0, 0, 10) * direction;
             FireOneArrow(secondDirection);
         }
@@ -90,7 +92,6 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(direction * currentPower, ForceMode2D.Impulse);
     }
 
-
     void RotateDirectionArrow()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -101,5 +102,4 @@ public class PlayerController : MonoBehaviour
         if (directionArrow != null)
             directionArrow.right = direction;
     }
-
 }

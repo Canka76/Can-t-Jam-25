@@ -3,16 +3,19 @@ using UnityEngine;
 public class TargetMovement : MonoBehaviour
 {
     public Transform player;
-    public float speed = 8f;
+    private float speed; 
+
     void Start()
     {
-        Destroy(gameObject, 10f); 
+        speed = Random.Range(6f, 10f); 
+        Destroy(gameObject, 10f);     
     }
+
     void Update()
     {
         if (player != null)
         {
-            Vector2 dir = (player.position - transform.position).normalized;
+            Vector2 dir = ((Vector2)player.position - (Vector2)transform.position).normalized;
             transform.position += (Vector3)(dir * speed * Time.deltaTime);
         }
     }
