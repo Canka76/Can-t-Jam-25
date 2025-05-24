@@ -1,18 +1,26 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using Random = UnityEngine.Random;
 
 public class QuickTimeEvent : MonoBehaviour
 {
     public TextMeshProUGUI qteText; // Assign in Inspector
     public float timeLimit = 3f;
+    public PuzzleManager puzzleManager;
 
     private KeyCode[] possibleKeys = { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D };
     private KeyCode currentKey;
     private bool inputReceived = false;
 
     void Start()
+    {
+        StartCoroutine(StartQTE());
+    }
+
+    private void OnEnable()
     {
         StartCoroutine(StartQTE());
     }
@@ -31,12 +39,16 @@ public class QuickTimeEvent : MonoBehaviour
             {
                 inputReceived = true;
                 qteText.text = "Success!";
+                puzzleManager.currentProgress++;
+                Debug.Log(puzzleManager.currentProgress);
                 break;
             }
             else if (AnyWrongKeyPressed())
             {
                 inputReceived = true;
                 qteText.text = "Wrong Key!";
+                puzzleManager.currentProgress--;
+                Debug.Log(puzzleManager.currentProgress);
                 break;
             }
 
@@ -47,8 +59,10 @@ public class QuickTimeEvent : MonoBehaviour
         if (!inputReceived)
         {
             qteText.text = "Too Late!";
+            puzzleManager.currentProgress--;
         }
 
+        Debug.Log($"QTE çalışacak ve  progress: {puzzleManager.currentProgress}");
         // Wait a bit before starting again
         yield return new WaitForSeconds(2f);
         StartCoroutine(StartQTE());
