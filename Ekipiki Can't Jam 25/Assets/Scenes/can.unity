@@ -257,7 +257,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &220035389
 RectTransform:
   m_ObjectHideFlags: 0
@@ -554,6 +554,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slider
       objectReference: {fileID: 0}
+    - target: {fileID: 7345459396990488710, guid: 23a181ddd91539b4d8cea0e9b6e7af21, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741066435750019871, guid: 23a181ddd91539b4d8cea0e9b6e7af21, type: 3}
+      propertyPath: cursorTransform
+      value: 
+      objectReference: {fileID: 1351965666}
     - target: {fileID: 8741066435750019871, guid: 23a181ddd91539b4d8cea0e9b6e7af21, type: 3}
       propertyPath: canvasRectTransform
       value: 
@@ -563,6 +571,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23a181ddd91539b4d8cea0e9b6e7af21, type: 3}
+--- !u!224 &1351965666 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1353374864990560979, guid: 23a181ddd91539b4d8cea0e9b6e7af21, type: 3}
+  m_PrefabInstance: {fileID: 1134419463}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1469531128
 GameObject:
   m_ObjectHideFlags: 0
