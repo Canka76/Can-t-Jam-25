@@ -7,7 +7,7 @@ public class TargetMovement : MonoBehaviour
 
     void Start()
     {
-        speed = Random.Range(6f, 10f); 
+        speed = Random.Range(6f, 8f); 
         Destroy(gameObject, 10f);     
     }
 
