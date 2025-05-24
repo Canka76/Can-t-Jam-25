@@ -536,7 +536,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &220035389
 RectTransform:
   m_ObjectHideFlags: 0
@@ -554,8 +554,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3.6075, y: 156.6075}
-  m_SizeDelta: {x: 107.2151, y: 107.2151}
+  m_AnchoredPosition: {x: 82.20766, y: 235.20766}
+  m_SizeDelta: {x: 264.4154, y: 264.4154}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &220035390
 MonoBehaviour:
@@ -1954,8 +1954,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0000066757, y: 0.00002861}
-  m_SizeDelta: {x: 28.6003, y: 28.6}
+  m_AnchoredPosition: {x: -0.000011444, y: -0.000005722}
+  m_SizeDelta: {x: 77.2243, y: 77.2234}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771858331
 MonoBehaviour:
@@ -1970,6 +1970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   increaseKey: 32
+  puzzleManager: {fileID: 2078390309}
   minScaleIncrease: 0.2
   maxScaleIncrease: 0.5
   minShrink: 0.2
@@ -2144,7 +2145,7 @@ MonoBehaviour:
   minPuzzle: 3
   maxPuzzle: 5
   puzzles:
-  - {fileID: 2137818848}
+  - {fileID: 220035388}
 --- !u!1 &2078624166
 GameObject:
   m_ObjectHideFlags: 0

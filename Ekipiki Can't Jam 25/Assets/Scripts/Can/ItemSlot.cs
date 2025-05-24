@@ -1,25 +1,32 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections;
+using Random = UnityEngine.Random;
 
 public class ItemSlot : MonoBehaviour, IDropHandler
 {
     [Header("References")]
-    [SerializeField] private RectTransform canvasRectTransform;
-    [SerializeField] private RectTransform[] imageItems;
     [SerializeField] private RectTransform cursorTransform;
     [SerializeField] private RectTransform itemPrefab;
     [SerializeField] private RectTransform CursorsTransform;
+    public PuzzleManager puzzleManager;
+    [SerializeField] private CanvasGroup canvasGroup;
+
+    [Header("Manual Boundaries")]
+    [SerializeField] private RectTransform upperLeftBoundary;
+    [SerializeField] private RectTransform lowerLeftBoundary;
+    [SerializeField] private RectTransform upperRightBoundary;
+    [SerializeField] private RectTransform lowerRightBoundary;
 
     [Header("Timing")]
     [SerializeField] private float failTimeout = 5f;
-    
-    [SerializeField]float padding = 40f;
+
+    [SerializeField] private float padding = 40f;
 
     private Vector2 cursorInitialPosition;
     private Quaternion cursorInitialRotation;
     private bool randomizedByPlayer = false;
-    private int currentActiveIndex = -1;
 
     void Start()
     {
@@ -29,9 +36,21 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             cursorInitialRotation = cursorTransform.localRotation;
         }
 
-        RandomizeActiveImage();
-
+        RandomizeUIPositionAndRotation();
         StartCoroutine(WatchForPlayerRandomization());
+    }
+
+    private void OnEnable()
+    {
+        cursorInitialPosition = cursorTransform.anchoredPosition;
+        cursorInitialRotation = cursorTransform.localRotation;
+        
+        RandomizeUIPositionAndRotation();
+        StartCoroutine(WatchForPlayerRandomization());
+        
+        //BUG Fix Slider
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.alpha = 1;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -42,11 +61,9 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             if (droppedItem != null)
             {
                 droppedItem.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
-                Debug.Log("Successfully dropped item");
-
                 randomizedByPlayer = true;
-                RandomizeActiveImage();
-                RandomizeUIPositionAndRotation(); // untouched method
+
+                RandomizeUIPositionAndRotation();
             }
         }
     }
@@ -59,22 +76,14 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             CursorsTransform.localRotation = cursorInitialRotation;
         }
 
-        if (itemPrefab == null || canvasRectTransform == null)
+        if (itemPrefab == null)
         {
-            Debug.LogWarning("Missing itemPrefab or canvasRectTransform!");
+            Debug.LogWarning("Missing itemPrefab!");
             return;
         }
 
         Vector2 objectSize = itemPrefab.rect.size * itemPrefab.lossyScale;
-        float canvasWidth = canvasRectTransform.rect.width;
-        float canvasHeight = canvasRectTransform.rect.height;
-
-        float padding = 20f;
-
-        float minX = -canvasWidth / 2f + objectSize.x / 2f + padding;
-        float maxX = canvasWidth / 2f - objectSize.x / 2f - padding;
-        float minY = -canvasHeight / 2f + objectSize.y / 2f + padding;
-        float maxY = canvasHeight / 2f - objectSize.y / 2f - padding;
+        GetManualBounds(out float minX, out float maxX, out float minY, out float maxY, objectSize);
 
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
@@ -82,73 +91,6 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
         itemPrefab.anchoredPosition = new Vector2(randomX, randomY);
         itemPrefab.localRotation = Quaternion.Euler(0f, 0f, randomZ);
-    }
-
-    private void RandomizeActiveImage()
-    {
-        // Reset cursor
-        if (cursorTransform != null)
-        {
-            cursorTransform.anchoredPosition = cursorInitialPosition;
-            cursorTransform.localRotation = cursorInitialRotation;
-        }
-
-        if (imageItems == null || imageItems.Length == 0 || canvasRectTransform == null)
-        {
-            Debug.LogWarning("Missing image items or canvas reference!");
-            return;
-        }
-
-        // Deactivate all images
-        foreach (var img in imageItems)
-        {
-            img.gameObject.SetActive(false);
-        }
-
-        // Pick a random image
-        currentActiveIndex = Random.Range(0, imageItems.Length);
-        RectTransform activeImage = imageItems[currentActiveIndex];
-        activeImage.gameObject.SetActive(true);
-
-        Vector2 imageSize = activeImage.rect.size * activeImage.lossyScale;
-        float canvasWidth = canvasRectTransform.rect.width;
-        float canvasHeight = canvasRectTransform.rect.height;
-
-        
-        float minX = -canvasWidth / 2f + imageSize.x / 2f + padding;
-        float maxX = canvasWidth / 2f - imageSize.x / 2f - padding;
-        float minY = -canvasHeight / 2f + imageSize.y / 2f + padding;
-        float maxY = canvasHeight / 2f - imageSize.y / 2f - padding;
-
-        int attempts = 0;
-        bool placed = false;
-
-        while (attempts < 50 && !placed)
-        {
-            float randomX = Random.Range(minX, maxX);
-            float randomY = Random.Range(minY, maxY);
-            float randomZ = Random.Range(-60f, 60f);
-
-            activeImage.anchoredPosition = new Vector2(randomX, randomY);
-            activeImage.localRotation = Quaternion.Euler(0f, 0f, randomZ);
-
-            // Let Unity update transform matrix for next frame
-            Canvas.ForceUpdateCanvases();
-
-            if (!IsOverlapping(activeImage, itemPrefab))
-            {
-                placed = true;
-                break;
-            }
-
-            attempts++;
-        }
-
-        if (!placed)
-        {
-            Debug.LogWarning("Could not find non-colliding position after 50 tries.");
-        }
-
     }
 
     private IEnumerator WatchForPlayerRandomization()
@@ -160,30 +102,34 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
             if (!randomizedByPlayer)
             {
-                Debug.LogWarning("Player failed to drop in time. Randomizing again.");
-                RandomizeActiveImage();
+                Debug.LogWarning("Player failed. Randomizing again.");
                 RandomizeUIPositionAndRotation();
+                puzzleManager.currentProgress--;
             }
             else
             {
-                Debug.Log("Player succeeded. Resetting timer.");
+                puzzleManager.currentProgress++;
             }
         }
     }
 
-    private bool IsOverlapping(RectTransform a, RectTransform b)
+    private void GetManualBounds(out float minX, out float maxX, out float minY, out float maxY, Vector2 objectSize)
     {
-        if (a == null || b == null) return false;
+        minX = Mathf.Max(upperLeftBoundary.anchoredPosition.x, lowerLeftBoundary.anchoredPosition.x) + objectSize.x / 2f + padding;
+        maxX = Mathf.Min(upperRightBoundary.anchoredPosition.x, lowerRightBoundary.anchoredPosition.x) - objectSize.x / 2f - padding;
+        minY = Mathf.Max(lowerLeftBoundary.anchoredPosition.y, lowerRightBoundary.anchoredPosition.y) + objectSize.y / 2f + padding;
+        maxY = Mathf.Min(upperLeftBoundary.anchoredPosition.y, upperRightBoundary.anchoredPosition.y) - objectSize.y / 2f - padding;
+    }
 
-        Vector3[] cornersA = new Vector3[4];
-        Vector3[] cornersB = new Vector3[4];
-
-        a.GetWorldCorners(cornersA);
-        b.GetWorldCorners(cornersB);
-
-        Rect rectA = new Rect(cornersA[0], cornersA[2] - cornersA[0]);
-        Rect rectB = new Rect(cornersB[0], cornersB[2] - cornersB[0]);
-
-        return rectA.Overlaps(rectB);
+    void OnDrawGizmosSelected()
+    {
+        if (upperLeftBoundary && upperRightBoundary && lowerRightBoundary && lowerLeftBoundary)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(upperLeftBoundary.position, upperRightBoundary.position);
+            Gizmos.DrawLine(upperRightBoundary.position, lowerRightBoundary.position);
+            Gizmos.DrawLine(lowerRightBoundary.position, lowerLeftBoundary.position);
+            Gizmos.DrawLine(lowerLeftBoundary.position, upperLeftBoundary.position);
+        }
     }
 }
