@@ -639,6 +639,7 @@ GameObject:
   - component: {fileID: 1365512379}
   - component: {fileID: 1365512381}
   - component: {fileID: 1365512380}
+  - component: {fileID: 1365512382}
   m_Layer: 0
   m_Name: PlayerSpirite
   m_TagString: Player
@@ -789,6 +790,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1365512382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365512377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: babae71b622b68440b201aab6c5ee722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  healthText: {fileID: 0}
 --- !u!1 &1441976078
 GameObject:
   m_ObjectHideFlags: 0
