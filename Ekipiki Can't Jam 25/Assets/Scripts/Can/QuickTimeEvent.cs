@@ -7,6 +7,7 @@ public class QuickTimeEvent : MonoBehaviour
 {
     public TextMeshProUGUI qteText; // Assign in Inspector
     public float timeLimit = 3f;
+    public PuzzleManager puzzleManager;
 
     private KeyCode[] possibleKeys = { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D };
     private KeyCode currentKey;
@@ -31,12 +32,16 @@ public class QuickTimeEvent : MonoBehaviour
             {
                 inputReceived = true;
                 qteText.text = "Success!";
+                puzzleManager.currentProgress++;
+                Debug.Log(puzzleManager.currentProgress);
                 break;
             }
             else if (AnyWrongKeyPressed())
             {
                 inputReceived = true;
                 qteText.text = "Wrong Key!";
+                puzzleManager.currentProgress--;
+                Debug.Log(puzzleManager.currentProgress);
                 break;
             }
 
