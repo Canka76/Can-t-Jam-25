@@ -8,12 +8,12 @@ public class TargetCollision : MonoBehaviour
         {
             Debug.Log("🎯 Hedef oyuncuya çarptı!");
 
-            PlayerHealth health = other.GetComponent<PlayerHealth>();
-            if (health != null)
-            {
-                health.TakeDamage(1);
-            }
-
+            /* PlayerHealth health = other.GetComponent<PlayerHealth>();
+             if (health != null)
+             {
+                 health.TakeDamage(1);
+             }*/
+            //Time.timeScale = 0f;
             Destroy(gameObject); // Hedef kendini yok eder
         }
     }
