@@ -4,19 +4,21 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
+    [Header("UI References")]
     public GameObject pauseMenuUI;
-    public GameObject imageDisplayUI;         // The panel/image to show,
-    public GameObject imageUI;
-    public Button toggleImageButton;          // Reference to the Toggle button
-    public RectTransform toggleButtonRect;    // RectTransform of the Toggle button
-    public Sprite normalSprite;                // Default appearance
-    public Sprite activeSprite;                // Active appearance
+    public GameObject imageDisplayUI;
+    public GameObject backgroundPanel;
 
-    private Button[] allButtons;               // All buttons in the pause menu
+    [Header("Toggle Buttons")]
+    public GameObject toggleOnButton;  // Button shown when image is active
+    public GameObject toggleOffButton; // Button shown when image is inactive
+
+    private Button[] allButtons;
     private bool isPaused = false;
     private bool isImageVisible = false;
 
-    // Store initial values
+    // Store original layout of the inactive button (assume toggleOffButton is default)
+    private RectTransform toggleOffRect;
     private Vector2 initialAnchoredPosition;
     private Vector2 initialAnchorMin;
     private Vector2 initialAnchorMax;
@@ -26,36 +28,44 @@ public class PauseMenu : MonoBehaviour
     {
         allButtons = pauseMenuUI.GetComponentsInChildren<Button>(true);
 
-        if (toggleButtonRect != null)
+        toggleOffRect = toggleOffButton?.GetComponent<RectTransform>();
+
+        if (toggleOffRect != null)
         {
-            initialAnchoredPosition = toggleButtonRect.anchoredPosition;
-            initialAnchorMin = toggleButtonRect.anchorMin;
-            initialAnchorMax = toggleButtonRect.anchorMax;
-            initialPivot = toggleButtonRect.pivot;
+            initialAnchoredPosition = toggleOffRect.anchoredPosition;
+            initialAnchorMin = toggleOffRect.anchorMin;
+            initialAnchorMax = toggleOffRect.anchorMax;
+            initialPivot = toggleOffRect.pivot;
         }
+
+        UpdateToggleButtons();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused) Resume();
-            else Pause();
+            if (isPaused)
+                Resume();
+            else
+                Pause();
         }
-    }
-
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-        isPaused = false;
     }
 
     public void Pause()
     {
-        pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
+        backgroundPanel.SetActive(true);
+        pauseMenuUI.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1f;
+        isPaused = false;
+        backgroundPanel.SetActive(false);
+        pauseMenuUI.SetActive(false);
     }
 
     public void ReloadScene()
@@ -73,39 +83,41 @@ public class PauseMenu : MonoBehaviour
     public void ToggleImageDisplay()
     {
         isImageVisible = !isImageVisible;
-
         imageDisplayUI.SetActive(isImageVisible);
 
-        // Deactivate or activate all buttons except the toggle button
+        // Hide/show other pause buttons
         foreach (Button btn in allButtons)
         {
-            if (btn != toggleImageButton)
+            if (btn.gameObject != toggleOnButton && btn.gameObject != toggleOffButton)
                 btn.gameObject.SetActive(!isImageVisible);
         }
 
-        // Change the appearance
-        if (toggleImageButton != null && toggleImageButton.image != null)
-        {
-            toggleImageButton.image.sprite = isImageVisible ? activeSprite : normalSprite;
-        }
+        // Activate/deactivate the right toggle buttons
+        UpdateToggleButtons();
 
-        // Move toggle button to specified position or back to initial
-        if (toggleButtonRect != null)
+        // Move or reset toggle button
+        if (toggleOffRect != null)
         {
             if (isImageVisible)
             {
-                toggleButtonRect.anchoredPosition = new Vector2(-578, 294);
-                
-                
-
+                toggleOffRect.anchoredPosition = new Vector2(703, 341); // Target position
             }
             else
             {
-                toggleButtonRect.anchorMin = initialAnchorMin;
-                toggleButtonRect.anchorMax = initialAnchorMax;
-                toggleButtonRect.pivot = initialPivot;
-                toggleButtonRect.anchoredPosition = initialAnchoredPosition;
+                toggleOffRect.anchorMin = initialAnchorMin;
+                toggleOffRect.anchorMax = initialAnchorMax;
+                toggleOffRect.pivot = initialPivot;
+                toggleOffRect.anchoredPosition = initialAnchoredPosition;
             }
         }
+    }
+
+    private void UpdateToggleButtons()
+    {
+        if (toggleOnButton != null)
+            toggleOnButton.SetActive(isImageVisible);
+
+        if (toggleOffButton != null)
+            toggleOffButton.SetActive(!isImageVisible);
     }
 }
