@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     public float maxPower = 20f;
     public float barSpeed = 30f;
-    public float shootCooldown = 1f; // ⏱ Atışlar arası bekleme süresi
+    public float shootCooldown = 1f; // Atışlar arası bekleme süresi
 
     private float currentPower = 0f;
     private bool increasing = true;
