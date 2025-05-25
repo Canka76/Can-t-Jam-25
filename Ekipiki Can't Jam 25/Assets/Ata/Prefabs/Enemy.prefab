@@ -198,6 +198,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5c259136f4579394d95507d9ef136ce8, type: 3}
   - {fileID: 8300000, guid: 2cb29446629a0f244b81c3908a26346d, type: 3}
   audioSource: {fileID: 1831287615512130611}
+  slamSound: {fileID: 8300000, guid: f93ed6e6a03ca614dbc98f4a9a5c8988, type: 3}
 --- !u!50 &5636514917720751432
 Rigidbody2D:
   serializedVersion: 5
