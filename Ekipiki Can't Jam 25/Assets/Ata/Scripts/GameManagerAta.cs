@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class GameManagerAta : MonoBehaviour
 {
@@ -20,8 +22,17 @@ public class GameManagerAta : MonoBehaviour
 
         if (killCount >= winKillCount)
         {
-            GameOver(true);
-        }
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            int nextSceneIndex = currentSceneIndex + 1;
+            
+            // Optional: Loop back to first scene if at the end
+            if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
+            {
+                nextSceneIndex = 0;
+            }
+
+            SceneManager.LoadScene(nextSceneIndex);
+            }
     }
 
     public void GameOver(bool win)

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,8 +39,16 @@ public class PlayerController : MonoBehaviour
         gameTimer += Time.deltaTime;
         if (gameTimer >= gameDuration)
         {
-            EndGame();
-            return;
+                int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            int nextSceneIndex = currentSceneIndex + 1;
+            
+            // Optional: Loop back to first scene if at the end
+            if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
+            {
+                nextSceneIndex = 0;
+            }
+
+            SceneManager.LoadScene(nextSceneIndex);
         }
 
         RotateDirectionArrow();

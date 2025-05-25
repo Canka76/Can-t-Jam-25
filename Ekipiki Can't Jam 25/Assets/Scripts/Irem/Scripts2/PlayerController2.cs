@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController2 : MonoBehaviour
 {
@@ -72,7 +73,16 @@ public class PlayerController2 : MonoBehaviour
 
             if (gameTimer >= gameDuration)
             {
-                EndGame();
+                int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        
+        // Optional: Loop back to first scene if at the end
+        if (nextSceneIndex >= SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+
+        SceneManager.LoadScene(nextSceneIndex);
             }
         }
 
