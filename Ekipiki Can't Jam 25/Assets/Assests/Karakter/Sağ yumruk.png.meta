@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "Sa\u011F yumruk_0": -754851240451880934
+      "Sa\u011F yumruk_1": -317911142514130675
+      "Sa\u011F yumruk_2": 5183771643867228754
+      "Sa\u011F yumruk_3": 4766095583390098639
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

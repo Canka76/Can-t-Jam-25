@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Yakalama_0: 8623794118364473610
+      Yakalama_1: 5252478270324016715
+      Yakalama_2: -3399926617569906950
+      Yakalama_3: -1186968717902448026
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
