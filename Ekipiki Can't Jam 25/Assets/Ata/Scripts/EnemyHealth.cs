@@ -24,6 +24,8 @@ public class EnemyHealth : MonoBehaviour
 
     public AudioClip[] damageSounds;
     public AudioSource audioSource;
+    public AudioClip slamSound;
+
 
 
     void Start()
@@ -82,6 +84,9 @@ public class EnemyHealth : MonoBehaviour
         rb.isKinematic = false;
         movementScript?.SetMovementEnabled(false);
         IsGrabbed = false;
+
+        if (slamSound != null && audioSource != null)
+        audioSource.PlayOneShot(slamSound);
 
         Collider2D[] others = Physics2D.OverlapCircleAll(transform.position, 1f);
         foreach (Collider2D col in others)

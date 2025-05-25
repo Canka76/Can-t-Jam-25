@@ -55,9 +55,14 @@ public class PlayerGrabController : MonoBehaviour
     void SlamDown()
     {
         grabbedEnemy.Slam();
+
+        // 💥 Kamerayı salla!
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.3f, 0.4f);
+
         grabbedEnemy = null;
         anim.SetTrigger("Throw");
-        anim.SetBool("IsHolding", false); // Holding'den çık
+        anim.SetBool("IsHolding", false);
     }
 
     void ThrowForward()
