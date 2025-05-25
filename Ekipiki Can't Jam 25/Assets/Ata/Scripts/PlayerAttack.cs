@@ -29,18 +29,24 @@ public class PlayerAttack : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && canAttack)
         {
-            anim.SetTrigger("Attack");
+            comboCounter++;
+            PlayComboAnimation(comboCounter);
             Attack();
             canAttack = false;
             StartCoroutine(AttackRate());
             lastAttackTime = Time.time;
+
+            if (comboCounter >= 3)
+            {
+                comboCounter = 0;
+            }
         }
+
     }
 
     void Attack()
     {
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-        comboCounter++;
 
         foreach (Collider2D enemy in hitEnemies)
         {
@@ -66,6 +72,26 @@ public class PlayerAttack : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         canAttack = true;
     }
+
+        void PlayComboAnimation(int combo)
+    {
+        switch (combo)
+        {
+            case 1:
+                anim.SetTrigger("Attack1");
+                break;
+            case 2:
+                anim.SetTrigger("Attack2");
+                break;
+            case 3:
+                anim.SetTrigger("Attack3");
+                break;
+            default:
+                anim.SetTrigger("Attack1");
+                break;
+        }
+    }
+
 
     void OnDrawGizmosSelected()
     {

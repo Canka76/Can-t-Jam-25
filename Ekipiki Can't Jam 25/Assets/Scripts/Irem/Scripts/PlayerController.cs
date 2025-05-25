@@ -3,24 +3,45 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Arrow Settings")]
     public GameObject arrowPrefab;
     public Transform shootPoint;
-    public Slider powerBar;
-    public Image fillImage;
     public Transform directionArrow;
 
+    [Header("Power Settings")]
+    public Slider powerBar;
+    public Image fillImage;
     public float maxPower = 20f;
     public float barSpeed = 30f;
+    public float shootCooldown = 1f;
+
+    [Header("Animation & Audio")]
+    public Animator anim;
+    public AudioSource audioSource;
+    public AudioClip bowPullSound;
+    public AudioClip bowReleaseSound;
 
     private float currentPower = 0f;
     private bool increasing = true;
+    private float lastShootTime = -Mathf.Infinity;
 
     void Update()
     {
         RotateDirectionArrow();
-        // Otomatik dolup boşalan gü barı
+
+        // Mouse basıldığında animasyonu ve çekme sesini başlat
+        if (Input.GetMouseButtonDown(0))
+        {
+            anim.SetBool("isPulling", true);
+
+            if (bowPullSound != null && audioSource != null)
+                audioSource.PlayOneShot(bowPullSound);
+        }
+
+        // Güç barı kontrolü
         if (Input.GetMouseButton(0))
-        {if (increasing)
+        {
+            if (increasing)
             {
                 currentPower += Time.deltaTime * barSpeed;
                 if (currentPower >= maxPower)
@@ -42,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
         powerBar.value = currentPower;
 
-        // Renk değiştirme (doluluğa göre)
+        // Bar rengini değiştir
         if (currentPower < maxPower * 0.33f)
             fillImage.color = Color.red;
         else if (currentPower < maxPower * 0.66f)
@@ -50,32 +71,38 @@ public class PlayerController : MonoBehaviour
         else
             fillImage.color = Color.green;
 
-        // Tıklama ile fırlatma
+        // Mouse bırakıldığında ok fırlat ve animasyonu tetikle
         if (Input.GetMouseButtonUp(0))
         {
-            ShootArrow();
-            currentPower = 0f;
+            anim.SetBool("isPulling", false);
+
+            if (Time.time >= lastShootTime + shootCooldown)
+            {
+                ShootArrow();
+                anim.SetTrigger("TriggerShoot");
+
+                if (bowReleaseSound != null && audioSource != null)
+                    audioSource.PlayOneShot(bowReleaseSound);
+
+                lastShootTime = Time.time;
+                currentPower = 0f;
+            }
         }
     }
 
     void ShootArrow()
     {
-        Debug.Log("Çift atış durumu: " + GameManager.Instance.doubleShot);
-
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
 
         Vector2 direction = (mousePos - shootPoint.position).normalized;
 
+        // İlk ok
         FireOneArrow(direction);
 
-        // İkinci ok 
-        if (GameManager.Instance.doubleShot)
-            FireOneArrow(direction);
-
+        // Çift ok varsa
         if (GameManager.Instance != null && GameManager.Instance.doubleShot)
         {
-            // Hafif açılı ikinci ok
             Vector2 secondDirection = Quaternion.Euler(0, 0, 10) * direction;
             FireOneArrow(secondDirection);
         }
@@ -90,16 +117,22 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(direction * currentPower, ForceMode2D.Impulse);
     }
 
-
     void RotateDirectionArrow()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0f;
+        if (Camera.main == null) return;
 
-        Vector2 direction = (mousePos - shootPoint.position).normalized;
+        Vector3 mousePos = Input.mousePosition;
+
+        if (mousePos.x < 0 || mousePos.y < 0 || mousePos.x > Screen.width || mousePos.y > Screen.height)
+            return;
+
+        mousePos.z = 0f;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+        worldPos.z = 0f;
+
+        Vector2 direction = (worldPos - shootPoint.position).normalized;
 
         if (directionArrow != null)
             directionArrow.right = direction;
     }
-
 }
