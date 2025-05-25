@@ -184,7 +184,10 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Sol yumruk_0: 8143483025446178840
+      Sol yumruk_1: 6798689718209593716
+      Sol yumruk_2: 3328231853208723506
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

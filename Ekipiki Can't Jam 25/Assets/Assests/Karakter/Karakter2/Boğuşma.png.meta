@@ -46,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -84,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "Bo\u011Fu\u015Fma_0": -6956496878423544831
+      "Bo\u011Fu\u015Fma_1": -7438129085756883637
+      "Bo\u011Fu\u015Fma_2": -7014048089577648339
+      "Bo\u011Fu\u015Fma_3": -2193184037273608037
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
