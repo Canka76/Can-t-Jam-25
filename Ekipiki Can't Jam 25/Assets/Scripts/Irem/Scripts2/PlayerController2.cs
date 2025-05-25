@@ -12,6 +12,7 @@ public class PlayerController2 : MonoBehaviour
     float slideTimer = 0f;
     float slideDuration = 1f;
     bool isSliding = false;
+    public Animator anim;
 
     public float gameDuration = 30f; // Toplam oyun süresi
     private float gameTimer = 0f;
@@ -29,9 +30,13 @@ public class PlayerController2 : MonoBehaviour
         // Zıplama
         if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // velocity kullan
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             isGrounded = false;
+
+            anim.SetTrigger("Jump");
+            anim.SetBool("IsGrounded", false);
         }
+
 
         // Eğilmeyi başlat
         if (Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
@@ -39,10 +44,13 @@ public class PlayerController2 : MonoBehaviour
             isSliding = true;
             slideTimer = 0f;
 
+            anim.SetTrigger("Slide");
+
             transform.localScale = new Vector3(originalScale.x, originalScale.y * 0.5f, originalScale.z);
             col.offset = new Vector2(0, -0.25f);
             col.size = new Vector2(1, 0.5f);
         }
+
 
         // Eğilme süresi takip
         if (isSliding)
