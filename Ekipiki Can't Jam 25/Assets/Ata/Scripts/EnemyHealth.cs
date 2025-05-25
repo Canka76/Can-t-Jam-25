@@ -177,6 +177,7 @@ IEnumerator ResetSlamFlag(float delay)
 
     void Die()
     {
+        GameManagerAta.Instance.EnemyKilled();
         Destroy(gameObject);
     }
 }
