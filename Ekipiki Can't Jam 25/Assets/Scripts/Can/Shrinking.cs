@@ -18,15 +18,26 @@ public class Shrinking : MonoBehaviour
     private Vector3 originalScale;
     private bool hasGrown = false;
     private bool hasShrunk = false;
+    private bool isInitialized = false;
 
-    void Start()
+    void OnEnable()
     {
+        StartCoroutine(DelayedStart());
+    }
+
+    private IEnumerator DelayedStart()
+    {
+        yield return new WaitForSeconds(2f);
+
         originalScale = transform.localScale;
         InvokeRepeating(nameof(ShrinkScale), shrinkInterval, shrinkInterval);
+        isInitialized = true;
     }
 
     void Update()
     {
+        if (!isInitialized) return;
+
         if (Input.GetKeyDown(increaseKey))
         {
             float scaleIncrease = Random.Range(minScaleIncrease, maxScaleIncrease);
@@ -44,7 +55,7 @@ public class Shrinking : MonoBehaviour
             StartCoroutine(ResetScale());
         }
 
-        if (transform.localScale.x <= originalScale.x/2 && !hasShrunk)
+        if (transform.localScale.x <= originalScale.x / 2 && !hasShrunk)
         {
             puzzleManager.currentProgress -= 2;
             hasShrunk = true;
@@ -81,5 +92,4 @@ public class Shrinking : MonoBehaviour
 
         transform.localScale = newScale;
     }
-
 }

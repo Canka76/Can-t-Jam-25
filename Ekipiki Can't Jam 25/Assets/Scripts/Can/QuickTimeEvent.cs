@@ -10,6 +10,7 @@ public class QuickTimeEvent : MonoBehaviour
     public TextMeshProUGUI qteText; // Assign in Inspector
     public float timeLimit = 3f;
     public PuzzleManager puzzleManager;
+    public Image duvar;
 
     private KeyCode[] possibleKeys = { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D };
     private KeyCode currentKey;
@@ -23,13 +24,15 @@ public class QuickTimeEvent : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(StartQTE());
+        duvar.color = Color.white;
     }
 
     IEnumerator StartQTE()
     {
         // Pick a random key
         currentKey = possibleKeys[Random.Range(0, possibleKeys.Length)];
-        qteText.text = $"PRESS: {currentKey}";
+        qteText.text = currentKey.ToString();
+        qteText.color = Color.white; // Reset text color at start
         inputReceived = false;
 
         float timer = 0f;
@@ -40,7 +43,7 @@ public class QuickTimeEvent : MonoBehaviour
                 inputReceived = true;
                 qteText.text = "Success!";
                 puzzleManager.currentProgress++;
-                Debug.Log(puzzleManager.currentProgress);
+                Debug.Log($"Progress increased: {puzzleManager.currentProgress}");
                 break;
             }
             else if (AnyWrongKeyPressed())
@@ -48,7 +51,7 @@ public class QuickTimeEvent : MonoBehaviour
                 inputReceived = true;
                 qteText.text = "Wrong Key!";
                 puzzleManager.currentProgress--;
-                Debug.Log(puzzleManager.currentProgress);
+                Debug.Log($"Progress decreased: {puzzleManager.currentProgress}");
                 break;
             }
 
@@ -60,12 +63,29 @@ public class QuickTimeEvent : MonoBehaviour
         {
             qteText.text = "Too Late!";
             puzzleManager.currentProgress--;
+            Debug.Log($"Progress decreased (timeout): {puzzleManager.currentProgress}");
         }
 
-        Debug.Log($"QTE çalışacak ve  progress: {puzzleManager.currentProgress}");
-        // Wait a bit before starting again
-        yield return new WaitForSeconds(2f);
+        // Determine success status for color change
+        bool success = qteText.text == "Success!";
+
+        // Change text color based on success or failure
+        yield return StartCoroutine(ChangeTextColor(success));
+
+        // Restart the QTE
         StartCoroutine(StartQTE());
+    }
+
+    IEnumerator ChangeTextColor(bool success)
+    {
+        duvar.color = success
+            ? new Color(146f/255f, 206f/255f, 87f/255f)
+            : new Color(183f/255f, 80f/255f, 80f/255f);
+
+        // Wait for 2 seconds before resetting color
+        yield return new WaitForSeconds(2f);
+
+        duvar.color = Color.white;
     }
 
     bool AnyWrongKeyPressed()
