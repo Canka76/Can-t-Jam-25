@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      KARLI1PNG_0: 1706196224630901613
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
