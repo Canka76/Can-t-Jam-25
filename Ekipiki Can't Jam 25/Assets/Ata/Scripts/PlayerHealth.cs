@@ -51,6 +51,20 @@ public class PlayerHealth : MonoBehaviour
         isInvincible = false;
     }
 
+        public bool Heal(int amount)
+    {
+        if (currentHealth >= maxHealth)
+            return false;
+
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        Debug.Log("💚 Can topladın! Yeni Can: " + currentHealth);
+        return true;
+    }
+
+
     void Die()
     {
         Debug.Log("☠️ Öldün.");
