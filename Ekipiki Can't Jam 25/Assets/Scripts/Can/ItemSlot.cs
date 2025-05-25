@@ -24,31 +24,35 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
     [SerializeField] private float padding = 40f;
 
-    private Vector2 cursorInitialPosition;
+    [Header("Delay Settings")]
+    [SerializeField] private float randomizeDelay = 1f;  // Delay before randomizing UI
+
     private Quaternion cursorInitialRotation;
     private bool randomizedByPlayer = false;
+
+    public int Succeed = 0;
 
     void Start()
     {
         if (cursorTransform != null)
         {
-            cursorInitialPosition = cursorTransform.anchoredPosition;
             cursorInitialRotation = cursorTransform.localRotation;
         }
 
-        RandomizeUIPositionAndRotation();
-        StartCoroutine(WatchForPlayerRandomization());
+        StartCoroutine(RandomizeWithDelayCoroutine());
     }
 
     private void OnEnable()
     {
-        cursorInitialPosition = cursorTransform.anchoredPosition;
-        cursorInitialRotation = cursorTransform.localRotation;
+        if (cursorTransform != null)
+        {
+            cursorInitialRotation = cursorTransform.localRotation;
+        }
         
-        RandomizeUIPositionAndRotation();
+        StartCoroutine(RandomizeWithDelayCoroutine());
         StartCoroutine(WatchForPlayerRandomization());
-        
-        //BUG Fix Slider
+
+        // BUG Fix Slider
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1;
     }
@@ -63,16 +67,36 @@ public class ItemSlot : MonoBehaviour, IDropHandler
                 droppedItem.anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
                 randomizedByPlayer = true;
 
-                RandomizeUIPositionAndRotation();
+                Succeed = 2;
+
+                StartCoroutine(RandomizeWithDelayCoroutine());
+                puzzleManager.currentProgress++;
             }
         }
     }
 
+    // Public method to start randomization with delay
     public void RandomizeUIPositionAndRotation()
     {
+        StartCoroutine(RandomizeWithDelayCoroutine());
+    }
+
+    // Coroutine that waits before randomizing
+    private IEnumerator RandomizeWithDelayCoroutine()
+    {
+        yield return new WaitForSeconds(randomizeDelay);
+        _RandomizeUIPositionAndRotation();
+    }
+
+    // Actual randomization logic
+    private void _RandomizeUIPositionAndRotation()
+    {
+        Succeed = 0;
+
         if (CursorsTransform != null)
         {
-            CursorsTransform.anchoredPosition = cursorInitialPosition;
+            // Set fixed anchored position every time
+            CursorsTransform.anchoredPosition = new Vector2(-170f, 0f);
             CursorsTransform.localRotation = cursorInitialRotation;
         }
 
@@ -103,12 +127,11 @@ public class ItemSlot : MonoBehaviour, IDropHandler
             if (!randomizedByPlayer)
             {
                 Debug.LogWarning("Player failed. Randomizing again.");
-                RandomizeUIPositionAndRotation();
+
+                Succeed = 1;
+
+                StartCoroutine(RandomizeWithDelayCoroutine());
                 puzzleManager.currentProgress--;
-            }
-            else
-            {
-                puzzleManager.currentProgress++;
             }
         }
     }
