@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: ad98b2cf18e2d944bba1b758dce55ef2
+guid: 2dc4a2cb5dfe7d54ca9a23c7ae8935e0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5943554051908718428
-    second: ARKAPLAN UZUN_0
+      213: 8623794118364473610
+    second: Yakalama_0
+  - first:
+      213: 5252478270324016715
+    second: Yakalama_1
+  - first:
+      213: -3399926617569906950
+    second: Yakalama_2
+  - first:
+      213: -1186968717902448026
+    second: Yakalama_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,12 +55,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 400
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ARKAPLAN UZUN_0
+      name: Yakalama_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 455
-        height: 133
+        x: 9
+        y: 134
+        width: 109
+        height: 117
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +124,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c5f4a5f7beebb7250800000000000000
-      internalID: 5943554051908718428
+      spriteID: a09a7315f0fdda770800000000000000
+      internalID: 8623794118364473610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yakalama_1
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 134
+        width: 110
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b460f15782d84e840800000000000000
+      internalID: 5252478270324016715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yakalama_2
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 6
+        width: 113
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afea95141c801d0d0800000000000000
+      internalID: -3399926617569906950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yakalama_3
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 6
+        width: 108
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a7ce96d3a078fe0800000000000000
+      internalID: -1186968717902448026
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -134,8 +209,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      ARKAPLAN UZUN_0: 5943554051908718428
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

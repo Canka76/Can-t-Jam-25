@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: ad98b2cf18e2d944bba1b758dce55ef2
+guid: d8ee137337453884cb7aad7a9ab055a1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5943554051908718428
-    second: ARKAPLAN UZUN_0
+      213: -2610285350628229603
+    second: "\u0130dle_0"
+  - first:
+      213: -1268889521893365137
+    second: "\u0130dle_1"
+  - first:
+      213: -8962439751229271696
+    second: "\u0130dle_2"
+  - first:
+      213: 1266297506815971908
+    second: "\u0130dle_3"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,12 +55,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 400
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,13 +109,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ARKAPLAN UZUN_0
+      name: "\u0130dle_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 455
-        height: 133
+        x: 9
+        y: 134
+        width: 109
+        height: 117
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +124,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c5f4a5f7beebb7250800000000000000
-      internalID: 5943554051908718428
+      spriteID: d1ef561bd4766cbd0800000000000000
+      internalID: -2610285350628229603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u0130dle_1"
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 134
+        width: 113
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6aa454e3bff36ee0800000000000000
+      internalID: -1268889521893365137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u0130dle_2"
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 6
+        width: 116
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 071932308840f9380800000000000000
+      internalID: -8962439751229271696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u0130dle_3"
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 6
+        width: 113
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4429ab19fdac29110800000000000000
+      internalID: 1266297506815971908
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -134,8 +209,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      ARKAPLAN UZUN_0: 5943554051908718428
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

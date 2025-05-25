@@ -18,6 +18,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
     [SerializeField] private RectTransform lowerLeftBoundary;
     [SerializeField] private RectTransform upperRightBoundary;
     [SerializeField] private RectTransform lowerRightBoundary;
+    
 
     [Header("Timing")]
     [SerializeField] private float failTimeout = 5f;
@@ -111,7 +112,7 @@ public class ItemSlot : MonoBehaviour, IDropHandler
 
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
-        float randomZ = Random.Range(-360f, 360f);
+        float randomZ = Random.Range(-45f, 45f);
 
         itemPrefab.anchoredPosition = new Vector2(randomX, randomY);
         itemPrefab.localRotation = Quaternion.Euler(0f, 0f, randomZ);

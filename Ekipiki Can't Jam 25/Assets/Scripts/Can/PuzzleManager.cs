@@ -8,10 +8,13 @@ public class PuzzleManager : MonoBehaviour
     private int puzzleQueue = 0;
     private int puzzleIndex = 0;
 
+    [SerializeField] private float hitstopTrigger = 0.1f;
+
     [SerializeField] private int minPuzzle = 1;
     [SerializeField] private int maxPuzzle = 3;
 
     public GameObject[] puzzles;
+    private Hitstop Hitstop;
 
     private void Start()
     {
@@ -39,6 +42,9 @@ public class PuzzleManager : MonoBehaviour
 
     private void ProgressChanged()
     {
+        Hitstop.Instance.Trigger(hitstopTrigger);
+        Debug.LogError("Hit stop triggered");
+
         puzzleQueue++;
         Debug.Log("ProgressChanged");
 
