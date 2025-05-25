@@ -35,6 +35,12 @@ public class Arrow : MonoBehaviour
                 Debug.Log("Hedef vuruldu!");
             }
 
+            // Skoru artır
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddScore(1);
+            }
+
             Destroy(other.gameObject);
             Destroy(gameObject);
         }

@@ -25,8 +25,22 @@ public class PlayerController : MonoBehaviour
     private bool increasing = true;
     private float lastShootTime = -Mathf.Infinity;
 
+    public float gameDuration = 30f; 
+    private float gameTimer = 0f;
+    private bool gameOver = false;
+
+
     void Update()
     {
+        if (gameOver) return;
+
+        gameTimer += Time.deltaTime;
+        if (gameTimer >= gameDuration)
+        {
+            EndGame();
+            return;
+        }
+
         RotateDirectionArrow();
 
         // Mouse basıldığında animasyonu ve çekme sesini başlat
@@ -135,4 +149,11 @@ public class PlayerController : MonoBehaviour
         if (directionArrow != null)
             directionArrow.right = direction;
     }
+    void EndGame()
+    {
+        gameOver = true;
+        Time.timeScale = 0f;
+        Debug.Log("Süre doldu! Oyun bitti.");
+    }
+
 }
