@@ -24,6 +24,7 @@ public class QuickTimeEvent : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(StartQTE());
+        duvar.color = Color.white;
     }
 
     IEnumerator StartQTE()
