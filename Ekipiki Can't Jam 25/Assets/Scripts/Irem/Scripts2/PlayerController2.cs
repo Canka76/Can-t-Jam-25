@@ -8,9 +8,14 @@ public class PlayerController2 : MonoBehaviour
     private Vector3 originalScale;
     private BoxCollider2D col;
     private bool isGrounded = true;
+
     float slideTimer = 0f;
     float slideDuration = 1f;
     bool isSliding = false;
+
+    public float gameDuration = 30f; // Toplam oyun süresi
+    private float gameTimer = 0f;
+    private bool gameOver = false;
 
     void Start()
     {
@@ -51,6 +56,18 @@ public class PlayerController2 : MonoBehaviour
                 col.size = new Vector2(1, 1);
             }
         }
+
+        // ⏱ Oyun süresi kontrolü
+        if (!gameOver)
+        {
+            gameTimer += Time.deltaTime;
+
+            if (gameTimer >= gameDuration)
+            {
+                EndGame();
+            }
+        }
+
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -79,4 +96,13 @@ public class PlayerController2 : MonoBehaviour
             this.enabled = false;
         }
     }
+    void EndGame()
+    {
+        gameOver = true;
+        Time.timeScale = 0f; // 🛑 Oyun durur
+        Debug.Log("⏰ 20 saniye doldu! Oyun bitti.");
+
+        // İsteğe bağlı: UI göster, restart butonu aç, skor yazdır vs.
+    }
+
 }
