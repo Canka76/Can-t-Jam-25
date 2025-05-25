@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 3;
@@ -20,6 +21,10 @@ public class EnemyHealth : MonoBehaviour
     private Animator anim;
 
     private int damage => 1;
+
+    public AudioClip[] damageSounds;
+    public AudioSource audioSource;
+
 
     void Start()
     {
@@ -48,6 +53,13 @@ public class EnemyHealth : MonoBehaviour
         {
             StartCoroutine(FlinchEffect());
         }
+
+        if (damageSounds.Length > 0 && audioSource != null)
+        {
+            int index = Random.Range(0, damageSounds.Length);
+            audioSource.PlayOneShot(damageSounds[index]);
+        }
+
     }
 
     public void Grabbed(Transform parent)
