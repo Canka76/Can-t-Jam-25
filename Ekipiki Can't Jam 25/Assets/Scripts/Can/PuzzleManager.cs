@@ -63,35 +63,42 @@ public class PuzzleManager : MonoBehaviour
         if (currentProgress >= -4 && currentProgress <= 2)
         {
             Debug.Log($"Default state: {currentProgress}");
-            playAnimator.SetTrigger("DefaultState");
-            enemAnimator.SetTrigger("DefaultState");
+            
+            playAnimator.SetInteger("PlayerSt",4);
+            enemAnimator.SetInteger("PlayerSt",4);
             
         }
         else if (currentProgress < -4 && currentProgress > -7)
         {
             Debug.Log($"Enemy is winning state: {currentProgress}");
-            playAnimator.SetTrigger("EnemyWinning");
-            enemAnimator.SetTrigger("PlayerWinning");
+            
+            playAnimator.SetInteger("PlayerSt",5);
+            enemAnimator.SetInteger("PlayerSt",1);
+            enemAnimator.SetInteger("PlayerSt",2);
+            
         }
-        else if (currentProgress > 2 && currentProgress < 5)
+        else if (currentProgress > 2 && currentProgress <= 5)
         {
             Debug.Log($"Player is winning state: {currentProgress}");
-            playAnimator.SetTrigger("PlayerWinning");
-            enemAnimator.SetTrigger("EnemyWinning");
-
+            
+            playAnimator.SetInteger("PlayerSt",2);
+            
+            enemAnimator.SetInteger("PlayerSt",5);
         }
-        else if (currentProgress >= 5)
+        
+        else if (currentProgress > 5)
         {
             Debug.LogWarning($"Player won: {currentProgress}");
-            playAnimator.SetTrigger("PlayerWon");
-            enemAnimator.SetTrigger("EnemyWon");
+            
+            playAnimator.SetInteger("PlayerSt",3);
+            enemAnimator.SetInteger("PlayerSt",6);
 
         }
         else if (currentProgress <= -7)
         {
             Debug.LogWarning($"Enemy won: {currentProgress}");
-            playAnimator.SetTrigger("EnemyWon");
-            enemAnimator.SetTrigger("PlayerWon");
+            enemAnimator.SetInteger("Enemy",3);
+            playAnimator.SetInteger("PlayerSt",6);
             
         }
 
